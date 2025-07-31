@@ -21,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // user registration
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
         User savedUser = userService.registerUser(user);
@@ -36,17 +37,22 @@ public class UserController {
 
     }
 
+    // set user login
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
+        Map<String, String> response = new HashMap<>();
         User loggedInUser = userService.loginUser(user.getEmail(), user.getPassword());
         if (loggedInUser != null) {
-            return ResponseEntity.ok().body("Login successful");
+            response.put("message", "Login successful");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            response.put("message", "Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
     }
 
+    // check user role
     @GetMapping("/is-admin/{email}")
     public boolean isadmin(@PathVariable String email) {
         return userService.isAdmin(email);
@@ -57,6 +63,7 @@ public class UserController {
         return userService.isCustomer(email);
     }
 
+    // get all users
     @GetMapping("/all")
     public List<User> getAllUsers() {
         return userService.getAllUser();
