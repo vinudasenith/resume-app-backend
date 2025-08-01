@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 
 public class UserController {
@@ -68,4 +68,18 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUser();
     }
+
+    @PutMapping("/block/{email}")
+    public ResponseEntity<String> toggleUserStatus(@PathVariable String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        user.setEnabled(!user.isEnabled());
+        userService.saveUser(user);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
