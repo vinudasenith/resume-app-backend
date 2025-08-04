@@ -6,11 +6,21 @@ import com.example.resumeapp.resume_app.model.User;
 import com.example.resumeapp.resume_app.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.File;
+
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/resume")
@@ -55,24 +65,81 @@ public class ResumeController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadResume(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<Map<String, Object>> uploadResume(@RequestParam("file") MultipartFile file,
             @RequestParam("userEmail") String userEmail) {
         try {
+            System.out.println("Looking for user: " + userEmail);
             User user = userService.findByEmail(userEmail);
             if (user == null) {
-                return ResponseEntity.badRequest().body("User not found");
+                System.out.println("User not found");
+                return ResponseEntity.badRequest().body(Map.of("message", "User not found")); // ("User not found");
             }
+            System.out.println("User found: " + user.getEmail());
+
+            // save file to disk
+            String uploadDir = "C:\\Users\\Vinuda\\Documents\\Project\\uploads\\";
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                System.out.println("Creating directory: " + uploadDir);
+                directory.mkdirs();
+            }
+
+            String uniqueFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            String filePath = uploadDir + uniqueFilename;
+
+            File dest = new File(filePath);
+            System.out.println("Saving file to: " + filePath);
+            file.transferTo(dest);
+
+            // save resume metadata to db
             Resume resume = Resume.builder()
                     .fileName(file.getOriginalFilename())
                     .user(user)
                     .build();
 
+            System.out.println("Saving resume metadata to DB");
             resumeService.saveResume(resume);
 
-            return ResponseEntity.ok("Resume uploaded successfully");
+            RestTemplate restTemplate = new RestTemplate();
+            String fastApiUrl = "http://localhost:8000/parse_resume";
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            Resource fileResource = new FileSystemResource(dest);
+            body.add("file", fileResource);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> fastApiResponse = restTemplate.postForEntity(fastApiUrl, requestEntity, Map.class);
+
+            if (fastApiResponse.getStatusCode() == HttpStatus.OK && fastApiResponse.getBody() != null) {
+                Map parsedData = fastApiResponse.getBody();
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Resume uploaded successfully");
+                response.put("resume_score", parsedData.get("resume_score"));
+                response.put("score_grade", parsedData.get("score_grade"));
+                response.put("ats_compatibility", parsedData.get("ats_compatibility"));
+                response.put("smart_tips", parsedData.get("smart_tips"));
+
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(500).body(
+                        Map.of("message", "Failed to upload resume: " + fastApiResponse.getBody().get("message")));
+            }
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to upload resume");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "Failed to upload resume: " + e.getMessage()));
         }
+
+        // return ResponseEntity.ok(Map.of("message", "Resume uploaded successfully"));
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // return ResponseEntity.status(500).body(Map.of("message", "Failed to upload
+        // resume: " + e.getMessage()));
+        // }
     }
 
 }
