@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import com.example.resumeapp.resume_app.security.JwtUtil;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     // user registration
     @PostMapping("/register")
@@ -40,9 +42,13 @@ public class UserController {
     // set user login
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
-        Map<String, String> response = new HashMap<>();
         User loggedInUser = userService.loginUser(user.getEmail(), user.getPassword());
+        Map<String, String> response = new HashMap<>();
+
         if (loggedInUser != null) {
+            String token = jwtUtil.generateToken(loggedInUser.getEmail(), loggedInUser.getRole());
+            response.put("token", token);
+            response.put("role", loggedInUser.getRole());
             response.put("message", "Login successful");
             return ResponseEntity.ok(response);
         } else {
