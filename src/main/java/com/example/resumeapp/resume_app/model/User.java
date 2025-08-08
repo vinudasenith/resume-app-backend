@@ -1,7 +1,5 @@
 package com.example.resumeapp.resume_app.model;
 
-import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
-
 import jakarta.persistence.*;
 import lombok.*;
 
