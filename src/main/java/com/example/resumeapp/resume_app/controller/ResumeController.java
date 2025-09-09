@@ -17,9 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 
 import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import java.util.*;
 
 @RestController
@@ -64,9 +61,10 @@ public class ResumeController {
         return ResponseEntity.ok(resume);
     }
 
+    // upload resume
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadResume(@RequestParam("file") MultipartFile file,
-            @RequestParam("userEmail") String userEmail) {
+            @RequestParam("userEmail") String userEmail), {
         try {
             System.out.println("Looking for user: " + userEmail);
             User user = userService.findByEmail(userEmail);
@@ -93,9 +91,10 @@ public class ResumeController {
 
             // save resume metadata to db
             Resume resume = Resume.builder()
-                    .fileName(file.getOriginalFilename())
+                    .fileName(uniqueFilename)
                     .user(user)
                     .build();
+            resumeService.saveResume(resume);
 
             System.out.println("Saving resume metadata to DB");
             resumeService.saveResume(resume);
@@ -104,8 +103,7 @@ public class ResumeController {
             String fastApiUrl = "http://localhost:8000/parse_resume";
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            Resource fileResource = new FileSystemResource(dest);
-            body.add("file", fileResource);
+            body.add("file", new FileSystemResource(dest));
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -117,11 +115,10 @@ public class ResumeController {
                 Map parsedData = fastApiResponse.getBody();
 
                 Map<String, Object> response = new HashMap<>();
-                response.put("message", "Resume uploaded successfully");
-                response.put("resume_score", parsedData.get("resume_score"));
-                response.put("score_grade", parsedData.get("score_grade"));
+                response.put("is_resume", parsedData.get("is_resume"));
+                response.put("message", parsedData.get("message"));
                 response.put("ats_compatibility", parsedData.get("ats_compatibility"));
-                response.put("smart_tips", parsedData.get("smart_tips"));
+                response.put("feedback", parsedData.get("feedback"));
 
                 return ResponseEntity.ok(response);
             } else {
@@ -133,13 +130,6 @@ public class ResumeController {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("message", "Failed to upload resume: " + e.getMessage()));
         }
-
-        // return ResponseEntity.ok(Map.of("message", "Resume uploaded successfully"));
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // return ResponseEntity.status(500).body(Map.of("message", "Failed to upload
-        // resume: " + e.getMessage()));
-        // }
     }
 
 }
