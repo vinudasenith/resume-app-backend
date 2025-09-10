@@ -65,12 +65,13 @@ public class ResumeController {
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadResume(@RequestParam("file") MultipartFile file,
             @RequestParam("userEmail") String userEmail) {
+
         try {
             System.out.println("Looking for user: " + userEmail);
             User user = userService.findByEmail(userEmail);
             if (user == null) {
                 System.out.println("User not found");
-                return ResponseEntity.badRequest().body(Map.of("message", "User not found")); // ("User not found");
+                return ResponseEntity.badRequest().body(Map.of("message", "User not found"));
             }
             System.out.println("User found: " + user.getEmail());
 
@@ -89,16 +90,6 @@ public class ResumeController {
             System.out.println("Saving file to: " + filePath);
             file.transferTo(dest);
 
-            // save resume metadata to db
-            Resume resume = Resume.builder()
-                    .fileName(uniqueFilename)
-                    .user(user)
-                    .build();
-            resumeService.saveResume(resume);
-
-            System.out.println("Saving resume metadata to DB");
-            resumeService.saveResume(resume);
-
             RestTemplate restTemplate = new RestTemplate();
             String fastApiUrl = "http://localhost:8000/parse_resume";
 
@@ -111,13 +102,29 @@ public class ResumeController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<Map> fastApiResponse = restTemplate.postForEntity(fastApiUrl, requestEntity, Map.class);
 
+            Integer atsScore = null;
+            if (fastApiResponse.getBody() != null && fastApiResponse.getBody().get("ats_compatibility") != null) {
+                atsScore = (Integer) fastApiResponse.getBody().get("ats_compatibility");
+            }
+
+            // save resume metadata to db
+            Resume resume = Resume.builder()
+                    .fileName(uniqueFilename)
+                    .user(user)
+                    .atsCompatibility(atsScore != null ? atsScore : 0)
+                    .build();
+            resumeService.saveResume(resume);
+
+            System.out.println("Saving resume metadata to DB");
+            resumeService.saveResume(resume);
+
             if (fastApiResponse.getStatusCode() == HttpStatus.OK && fastApiResponse.getBody() != null) {
                 Map parsedData = fastApiResponse.getBody();
 
                 Map<String, Object> response = new HashMap<>();
                 response.put("is_resume", parsedData.get("is_resume"));
                 response.put("message", parsedData.get("message"));
-                response.put("ats_compatibility", parsedData.get("ats_compatibility"));
+                response.put("ats_compatibility", atsScore);
                 response.put("feedback", parsedData.get("feedback"));
 
                 return ResponseEntity.ok(response);
