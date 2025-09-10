@@ -64,7 +64,7 @@ public class ResumeController {
     // upload resume
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadResume(@RequestParam("file") MultipartFile file,
-            @RequestParam("userEmail") String userEmail), {
+            @RequestParam("userEmail") String userEmail) {
         try {
             System.out.println("Looking for user: " + userEmail);
             User user = userService.findByEmail(userEmail);
