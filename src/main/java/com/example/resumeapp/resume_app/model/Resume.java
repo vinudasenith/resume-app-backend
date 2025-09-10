@@ -31,4 +31,6 @@ public class Resume {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Integer atsCompatibility;
+
 }
