@@ -58,6 +58,35 @@ public class UserController {
 
     }
 
+    // pass user own date
+    @GetMapping("/me")
+    public ResponseEntity<?> getLoggedInUser(@RequestHeader("Authorization") String authHeader) {
+        try {
+
+            String token = authHeader.replace("Bearer ", "");
+            String email = jwtUtil.extractEmail(token);
+            User user = userService.findByEmail(email);
+
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("id", user.getId());
+            userData.put("email", user.getEmail());
+            userData.put("firstName", user.getFirstName());
+            userData.put("lastName", user.getLastName());
+            userData.put("username", user.getUsername());
+            userData.put("role", user.getRole());
+
+            return ResponseEntity.ok(userData);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+    }
+
     // check user role
     @GetMapping("/is-admin/{email}")
     public boolean isadmin(@PathVariable String email) {
