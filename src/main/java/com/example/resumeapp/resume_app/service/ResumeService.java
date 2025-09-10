@@ -31,22 +31,32 @@ public class ResumeService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String fastApiUrl = "http://localhost:8000/parse_resume";
 
+    // save resume
     public Resume saveResume(Resume resume) {
         return resumeRepository.save(resume);
     }
 
+    // get resume
+    public Resume getResumeById(Long id) {
+        return resumeRepository.findById(id).orElse(null);
+    }
+
+    // get all resumes
     public List<Resume> getAllResume() {
         return resumeRepository.findAll();
     }
 
+    // get resume by user
     public List<Resume> getResumeByUser(User user) {
         return resumeRepository.findByUser(user);
     }
 
+    // get resume by file name
     public Resume getResumeByFileName(String fileName) {
         return resumeRepository.findByFileName(fileName);
     }
 
+    // send resume to fast api
     public String sendResumeToFastApi(MultipartFile resumeFile) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
