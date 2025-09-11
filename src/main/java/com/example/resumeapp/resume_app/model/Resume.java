@@ -33,4 +33,6 @@ public class Resume {
 
     private Integer atsCompatibility;
 
+    private boolean hasFeedback;
+
 }
