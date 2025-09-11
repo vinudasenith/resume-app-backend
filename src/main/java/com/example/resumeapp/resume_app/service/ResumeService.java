@@ -56,6 +56,15 @@ public class ResumeService {
         return resumeRepository.findByFileName(fileName);
     }
 
+    // mark resume as having feedback
+    public void markResumeAsHavingFeedback(Long resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RuntimeException("Resume not found with id: " + resumeId));
+
+        resume.setHasFeedback(true);
+        resumeRepository.save(resume);
+    }
+
     // send resume to fast api
     public String sendResumeToFastApi(MultipartFile resumeFile) throws Exception {
         HttpHeaders headers = new HttpHeaders();
