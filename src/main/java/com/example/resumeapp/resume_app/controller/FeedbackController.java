@@ -38,7 +38,19 @@ public class FeedbackController {
 
         Feedback saved = feedbackService.saveFeedback(feedback);
 
+        resumeService.markResumeAsHavingFeedback(resumeId);
+
         return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/my-feedback")
+    public ResponseEntity<?> getMyFeedback(@RequestParam String email) {
+        List<Feedback> feedbacks = feedbackService.getFeedbackByUserEmail(email);
+
+        if (feedbacks.isEmpty()) {
+            return ResponseEntity.ok("No feedback found for this user.");
+        }
+        return ResponseEntity.ok(feedbacks);
     }
 
     // Get all feedback
