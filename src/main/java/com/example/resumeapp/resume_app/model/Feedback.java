@@ -25,5 +25,10 @@ public class Feedback {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
+
     private Boolean isRead = false;
 }
