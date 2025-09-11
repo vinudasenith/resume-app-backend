@@ -32,7 +32,12 @@ public class FeedbackService {
 
     // get feedback by resume
     public List<Feedback> getFeedbackByResume(Resume resume) {
-        return feedbackRepository.findByResume(resume).map(List::of).orElse(List.of());
+        return feedbackRepository.findByResume(resume);
+    }
+
+    // get feedback by user email
+    public List<Feedback> getFeedbackByUserEmail(String email) {
+        return feedbackRepository.findAllByResumeUserEmail(email);
     }
 
 }
