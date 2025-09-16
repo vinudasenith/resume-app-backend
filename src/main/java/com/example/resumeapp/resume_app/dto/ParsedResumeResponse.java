@@ -1,6 +1,5 @@
 package com.example.resumeapp.resume_app.dto;
 
-import java.util.List;
 import java.util.Map;
 
 public class ParsedResumeResponse {
@@ -9,7 +8,6 @@ public class ParsedResumeResponse {
     private String raw_text;
 
     // Getters and setters
-
     public Map<String, Object> getParsed_data() {
         return parsed_data;
     }

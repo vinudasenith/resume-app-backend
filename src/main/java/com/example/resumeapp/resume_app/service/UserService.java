@@ -2,7 +2,9 @@ package com.example.resumeapp.resume_app.service;
 
 import com.example.resumeapp.resume_app.model.User;
 import com.example.resumeapp.resume_app.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     // user registration method

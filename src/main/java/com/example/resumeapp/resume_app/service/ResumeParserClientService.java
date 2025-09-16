@@ -2,14 +2,18 @@ package com.example.resumeapp.resume_app.service;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 import com.example.resumeapp.resume_app.dto.ParsedResumeResponse;
@@ -25,6 +29,7 @@ public class ResumeParserClientService {
         this.restTemplate = new RestTemplate();
     }
 
+    // send file to parser
     public ParsedResumeResponse sendFileToParser(MultipartFile file) throws IOException {
         String parserUrl = "http://localhost:8000/parse_resume";
 

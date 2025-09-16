@@ -17,8 +17,10 @@ import com.example.resumeapp.resume_app.model.User;
 import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.ByteArrayResource;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 

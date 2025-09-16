@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
+    // get feedback by resume
     List<Feedback> findByResume(Resume resume);
 
     @Query("SELECT f FROM Feedback f WHERE f.resume.user.email = :email")

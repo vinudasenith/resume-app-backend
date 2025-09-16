@@ -21,6 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
     private final JwtUtil jwtUtil;
 
     // user registration
@@ -39,7 +40,7 @@ public class UserController {
 
     }
 
-    // set user login
+    // user login
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
         User loggedInUser = userService.loginUser(user.getEmail(), user.getPassword());
@@ -87,12 +88,13 @@ public class UserController {
 
     }
 
-    // check user role
+    // check user role(admin)
     @GetMapping("/is-admin/{email}")
     public boolean isadmin(@PathVariable String email) {
         return userService.isAdmin(email);
     }
 
+    // check user role(customer)
     @GetMapping("/is-customer/{email}")
     public boolean isCustomer(@PathVariable String email) {
         return userService.isCustomer(email);
@@ -104,6 +106,7 @@ public class UserController {
         return userService.getAllUser();
     }
 
+    // block user by email
     @PutMapping("/block/{email}")
     public ResponseEntity<String> toggleUserStatus(@PathVariable String email) {
         User user = userService.findByEmail(email);

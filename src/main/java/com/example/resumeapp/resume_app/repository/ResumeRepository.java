@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
+    // get resume by user
     List<Resume> findByUser(User user);
 
+    // get resume by file name
     Resume findByFileName(String fileName);
 
 }

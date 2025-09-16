@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
@@ -22,6 +21,7 @@ public class JwtUtil {
         this.SECRET_KEY = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
+    // generate token
     public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
@@ -34,6 +34,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // extract email
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
@@ -43,6 +44,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
+    // validate token
     public boolean validateToken(String token, String userEmail) {
         final String email = extractEmail(token);
         return email.equals(userEmail);

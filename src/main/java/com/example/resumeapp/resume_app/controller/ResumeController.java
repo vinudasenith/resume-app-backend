@@ -26,6 +26,7 @@ import java.util.*;
 public class ResumeController {
 
     private final ResumeService resumeService;
+
     private final UserService userService;
 
     // save resume
@@ -83,9 +84,11 @@ public class ResumeController {
                 directory.mkdirs();
             }
 
+            // generate unique filename
             String uniqueFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             String filePath = uploadDir + uniqueFilename;
 
+            // save file
             File dest = new File(filePath);
             System.out.println("Saving file to: " + filePath);
             file.transferTo(dest);
