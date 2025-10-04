@@ -1,12 +1,12 @@
-# Resume Matcher Pro Backend 
+# 🧾 Resume Matcher Pro Backend 
 ____
 
-## Overview ℹ️
+## 🧩 Overview
 ____
 
 This repository contains the backend for Resume Matcher Pro, a web application designed to check CVs, give a relevance score with a detailed report based on predefined criteria, and allow admins to provide manual feedback. The backend is built using Java and Spring Boot, offering RESTful APIs to support the Angular frontend. It integrates with a database to store user profiles, resumes, scoring reports, and feedback, enabling automated and human-assisted resume evaluation.
 
-## Tech Stack 🛠️
+## 🛠️ Tech Stack 
 ____
 
 - **Language**: Java 17 
@@ -19,7 +19,7 @@ ____
   - Spring Security (Authentication & Authorization) 
   - Lombok (Boilerplate reduction) 
 
-## Features 
+## ✨ Features 
 ____
 
 - **User Management**: Secure user registration, login, and profile management with JWT-based authentication. 
@@ -30,7 +30,7 @@ ____
 - **REST APIs**: Provides endpoints for seamless interaction with the Angular frontend. 
 - **Security**: JWT-based authentication with role-based access control (e.g., USER, ADMIN roles). 
 
-## Prerequisites ✅
+## ⚙️ Prerequisites 
 ____
 
 Before setting up the project, ensure you have the following installed:
@@ -40,7 +40,7 @@ Before setting up the project, ensure you have the following installed:
 - PostgreSQL 15 or higher (or another compatible database) 
 - Git 
 
-## Setup Instructions 🚀
+## 🚀 Setup Instructions 
 ____
 
 1. **Clone the Repository**:
@@ -49,7 +49,7 @@ ____
    cd resume-app-backend
    ```
 
-2. **Configure the Database** 🗄️:
+2.🗄️ **Configure the Database** :
    - Install PostgreSQL and create a database named `resume_matcher`.
    - Update the database configuration in `src/main/resources/application.properties`:
      ```properties
@@ -65,14 +65,14 @@ ____
    mvn clean install
    ```
 
-4. **Run the Application** ▶️:
+4. ▶️ **Run the Application** :
    Start the Spring Boot application:
    ```bash
    ./mvnw spring-boot:run
    ```
    The application will be available at `http://localhost:8080`.
 
-## Project Structure 📂
+## 📂 Project Structure
 ____
 
 ```plaintext
@@ -104,7 +104,7 @@ ____
 └── pom.xml                         # Maven project configuration file 
 ```
 
-## API Endpoints 🔗
+## 🔗 API Endpoints 
 ____
 
 Key endpoints:
@@ -123,7 +123,7 @@ Run unit and integration tests with:
 mvn test
 ```
 
-## License 📜
+## 📜 License 
 ____
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
